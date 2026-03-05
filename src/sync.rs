@@ -155,7 +155,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
         .clone()
         .unwrap_or_else(|| local_destination.join(".prsync"));
     vlog(options, format!("state root: {}", state_root.display()));
-    let _destination_lock = acquire_destination_lock(&state_root)?;
+    let destination_lock = acquire_destination_lock(&state_root)?;
     vlog(options, "destination lock acquired");
 
     vlog(options, "listing remote entries...");
@@ -321,7 +321,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
     }
     ui.finish_all();
 
-    Ok(RunSummary {
+    let summary = RunSummary {
         transferred_files: transferred_files.load(Ordering::Relaxed),
         skipped_files: skipped,
         transferred_bytes: transferred_bytes.load(Ordering::Relaxed),
@@ -329,7 +329,15 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
         delta_files: delta_files.load(Ordering::Relaxed),
         delta_fallback_files: delta_fallback_files.load(Ordering::Relaxed),
         bytes_saved: bytes_saved.load(Ordering::Relaxed),
-    })
+    };
+
+    drop(destination_lock);
+    if state_root.exists() {
+        fs::remove_dir_all(&state_root)
+            .with_context(|| format!("cleanup state root: {}", state_root.display()))?;
+    }
+
+    Ok(summary)
 }
 
 fn should_transfer(
