@@ -68,24 +68,24 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${GITHUB_REF_NAME}"
-          NAME="prsync-${VERSION}-${{ matrix.archive_platform }}"
-          BIN_PATH="target/${{ matrix.target }}/release/prsync"
+          NAME="parsync-${VERSION}-${{ matrix.archive_platform }}"
+          BIN_PATH="target/${{ matrix.target }}/release/parsync"
           mkdir -p dist
-          cp "${BIN_PATH}" dist/prsync
+          cp "${BIN_PATH}" dist/parsync
           cp README.md dist/README.md
           cp LICENSE dist/LICENSE
-          chmod 755 dist/prsync
+          chmod 755 dist/parsync
           chmod 644 dist/README.md dist/LICENSE
-          tar -C dist -czf "${NAME}.tar.gz" prsync README.md LICENSE
+          tar -C dist -czf "${NAME}.tar.gz" parsync README.md LICENSE
           sha256sum "${NAME}.tar.gz" > "${NAME}.sha256"
 
       - name: Upload packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: prsync-${{ matrix.archive_platform }}
+          name: parsync-${{ matrix.archive_platform }}
           path: |
-            prsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.tar.gz
-            prsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.sha256
+            parsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.tar.gz
+            parsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.sha256
           if-no-files-found: error
 
   build-macos:
@@ -129,24 +129,24 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${GITHUB_REF_NAME}"
-          NAME="prsync-${VERSION}-${{ matrix.archive_platform }}"
-          BIN_PATH="target/${{ matrix.target }}/release/prsync"
+          NAME="parsync-${VERSION}-${{ matrix.archive_platform }}"
+          BIN_PATH="target/${{ matrix.target }}/release/parsync"
           mkdir -p dist
-          cp "${BIN_PATH}" dist/prsync
+          cp "${BIN_PATH}" dist/parsync
           cp README.md dist/README.md
           cp LICENSE dist/LICENSE
-          chmod 755 dist/prsync
+          chmod 755 dist/parsync
           chmod 644 dist/README.md dist/LICENSE
-          tar -C dist -czf "${NAME}.tar.gz" prsync README.md LICENSE
+          tar -C dist -czf "${NAME}.tar.gz" parsync README.md LICENSE
           shasum -a 256 "${NAME}.tar.gz" > "${NAME}.sha256"
 
       - name: Upload packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: prsync-${{ matrix.archive_platform }}
+          name: parsync-${{ matrix.archive_platform }}
           path: |
-            prsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.tar.gz
-            prsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.sha256
+            parsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.tar.gz
+            parsync-${{ github.ref_name }}-${{ matrix.archive_platform }}.sha256
           if-no-files-found: error
 
   build-windows:
@@ -174,21 +174,21 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $Version = "${env:GITHUB_REF_NAME}"
-          $Name = "prsync-$Version-x86_64-windows"
+          $Name = "parsync-$Version-x86_64-windows"
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item "target/x86_64-pc-windows-msvc/release/prsync.exe" "dist/prsync.exe"
+          Copy-Item "target/x86_64-pc-windows-msvc/release/parsync.exe" "dist/parsync.exe"
           Copy-Item "README.md" "dist/README.md"
           Copy-Item "LICENSE" "dist/LICENSE"
-          Compress-Archive -Path "dist/prsync.exe","dist/README.md","dist/LICENSE" -DestinationPath "$Name.zip" -Force
+          Compress-Archive -Path "dist/parsync.exe","dist/README.md","dist/LICENSE" -DestinationPath "$Name.zip" -Force
           (Get-FileHash "$Name.zip" -Algorithm SHA256).Hash.ToLower() + "  $Name.zip" | Out-File -NoNewline "$Name.sha256"
 
       - name: Upload packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: prsync-x86_64-windows
+          name: parsync-x86_64-windows
           path: |
-            prsync-${{ github.ref_name }}-x86_64-windows.zip
-            prsync-${{ github.ref_name }}-x86_64-windows.sha256
+            parsync-${{ github.ref_name }}-x86_64-windows.zip
+            parsync-${{ github.ref_name }}-x86_64-windows.sha256
           if-no-files-found: error
 
   publish:

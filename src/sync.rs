@@ -221,7 +221,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
     let state_root = options
         .state_root
         .clone()
-        .unwrap_or_else(|| local_destination.join(".prsync"));
+        .unwrap_or_else(|| local_destination.join(".parsync"));
     vlog(options, format!("state root: {}", state_root.display()));
     let destination_lock = acquire_destination_lock(&state_root)?;
     vlog(options, "destination lock acquired");
@@ -453,7 +453,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
         ),
     );
 
-    // Ensure all state/lock handles are closed before removing .prsync on Windows.
+    // Ensure all state/lock handles are closed before removing .parsync on Windows.
     drop(state);
     drop(ui);
     drop(destination_lock);
@@ -990,10 +990,10 @@ fn install_signal_handlers() -> Result<()> {
             let count = INTERRUPT_COUNT.fetch_add(1, Ordering::SeqCst) + 1;
             INTERRUPTED.store(true, Ordering::SeqCst);
             if count >= 2 {
-                eprintln!("[prsync] received second interrupt, forcing exit");
+                eprintln!("[parsync] received second interrupt, forcing exit");
                 std::process::exit(130);
             } else {
-                eprintln!("[prsync] interrupt received, stopping after current operation...");
+                eprintln!("[parsync] interrupt received, stopping after current operation...");
             }
         }) {
             setup_err = Some(anyhow!(err));
@@ -1070,19 +1070,19 @@ fn list_entries_with_spinner<R: RemoteClient + Sync>(
 
 fn vlog(options: &SyncOptions, message: impl AsRef<str>) {
     if options.verbose && !options.progress {
-        eprintln!("[prsync] {}", message.as_ref());
+        eprintln!("[parsync] {}", message.as_ref());
     }
 }
 
 fn log_status(options: &SyncOptions, message: impl AsRef<str>) {
     if options.verbose || options.progress {
-        eprintln!("[prsync] {}", message.as_ref());
+        eprintln!("[parsync] {}", message.as_ref());
     }
 }
 
 fn log_debug(options: &SyncOptions, message: impl AsRef<str>) {
     if options.debug {
-        eprintln!("[prsync][debug] {}", message.as_ref());
+        eprintln!("[parsync][debug] {}", message.as_ref());
     }
 }
 
@@ -1092,11 +1092,11 @@ fn is_windows() -> bool {
 
 fn log_windows_warning(options: &SyncOptions, gate: &AtomicBool, message: String) {
     if options.debug {
-        eprintln!("[prsync][warn] {message}");
+        eprintln!("[parsync][warn] {message}");
         return;
     }
     if !gate.swap(true, Ordering::SeqCst) {
-        eprintln!("[prsync][warn] {message}");
+        eprintln!("[parsync][warn] {message}");
     }
 }
 
@@ -1126,7 +1126,7 @@ fn print_plan_summary(options: &SyncOptions, summary: &PlanSummary) {
         delta_planned = summary.delta_planned,
     );
     if options.debug {
-        eprintln!("[prsync][debug] {summary}");
+        eprintln!("[parsync][debug] {summary}");
     }
 }
 
@@ -1750,7 +1750,7 @@ mod tests {
             delta_min_size: 8 * 1024 * 1024,
             delta_block_size: None,
             delta_max_literals: 64 * 1024 * 1024,
-            delta_helper: "prsync --internal-remote-helper".to_string(),
+            delta_helper: "parsync --internal-remote-helper".to_string(),
             delta_fallback: true,
             strict_durability: false,
             verify_existing: false,

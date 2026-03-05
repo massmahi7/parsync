@@ -1,6 +1,6 @@
-# prsync
+# parsync
 
-`prsync` is a high-throughput, resumable pull sync from SSH remotes, with
+`parsync` is a high-throughput, resumable pull sync from SSH remotes, with
 parallel file transfers and optional block-delta sync.
 
 ![demo](assets/demo.gif)
@@ -8,7 +8,7 @@ parallel file transfers and optional block-delta sync.
 ## Installation
 
 Download the binary for your platform from the
-[releases page](https://github.com/AlpinDale/prsync/releases), or install from source:
+[releases page](https://github.com/AlpinDale/parsync/releases), or install from source:
 
 ```bash
 make build
@@ -24,13 +24,13 @@ make install
 ## Usage
 
 ```bash
-prsync -vrPlu user@example.com:/remote/path /local/destination
+parsync -vrPlu user@example.com:/remote/path /local/destination
 ```
 
 With non-default SSH port:
 
 ```bash
-prsync -vrPlu user@example.com:2222:/remote/path /local/destination
+parsync -vrPlu user@example.com:2222:/remote/path /local/destination
 ```
 
 SSH config host aliases are supported.
@@ -38,7 +38,7 @@ SSH config host aliases are supported.
 ## Performance tuning
 
 ```bash
-prsync -vrPlu --jobs 16 --chunk-size 16777216 --chunk-threshold 134217728 user@host:/src /dst
+parsync -vrPlu --jobs 16 --chunk-size 16777216 --chunk-threshold 134217728 user@host:/src /dst
 ```
 
 Balanced mode defaults:
@@ -65,7 +65,7 @@ Throughput flags:
 Enable strict mode to hard-fail on unsupported behavior:
 
 ```bash
-prsync --strict-windows-metadata -vrPlu user@host:/src C:\\dst
+parsync --strict-windows-metadata -vrPlu user@host:/src C:\\dst
 ```
 
 ## Windows symlink troubleshooting

@@ -353,7 +353,7 @@ def weak_hash(buf):
     return ((b<<16)|a) & 0xffffffff
 def strong_hash(buf):
     return hashlib.md5(buf).hexdigest()
-req=json.loads(base64.b64decode(os.environ['PRSYNC_DELTA_REQ_B64']))
+req=json.loads(base64.b64decode(os.environ['PARSYNC_DELTA_REQ_B64']))
 p=pathlib.Path(req['source_path'])
 data=p.read_bytes()
 bs=int(req['block_size'])
@@ -394,7 +394,7 @@ out={
 sys.stdout.write(json.dumps(out))
 PY"#;
         let cmd = format!(
-            "PRSYNC_DELTA_REQ_B64={} sh -lc {}",
+            "PARSYNC_DELTA_REQ_B64={} sh -lc {}",
             shell_quote_word(&req_b64),
             shell_quote_word(py)
         );
@@ -822,7 +822,7 @@ impl Drop for Connection {
     fn drop(&mut self) {
         // Keep shutdown snappy; transfer-time timeout remains higher.
         self.session.set_timeout(150);
-        let _ = self.session.disconnect(None, "prsync shutdown", None);
+        let _ = self.session.disconnect(None, "parsync shutdown", None);
     }
 }
 
@@ -835,14 +835,14 @@ fn authenticate_session(session: &Session, target: &ConnectTarget) -> Result<()>
         return Ok(());
     }
 
-    if let Ok(password) = std::env::var("PRSYNC_SSH_PASSWORD") {
+    if let Ok(password) = std::env::var("PARSYNC_SSH_PASSWORD") {
         if session.userauth_password(&target.user, &password).is_ok() && session.authenticated() {
             return Ok(());
         }
     }
 
     bail!(
-        "ssh authentication failed for {}@{}:{} (tried agent, configured/default keys, PRSYNC_SSH_PASSWORD)",
+        "ssh authentication failed for {}@{}:{} (tried agent, configured/default keys, PARSYNC_SSH_PASSWORD)",
         target.user,
         target.host,
         target.port

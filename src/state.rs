@@ -80,7 +80,7 @@ fn open_new_lock(lock_path: &Path) -> Result<File> {
         .open(lock_path)
         .with_context(|| {
             format!(
-                "acquire destination lock failed (another prsync may be running): {}",
+                "acquire destination lock failed (another parsync may be running): {}",
                 lock_path.display()
             )
         })
@@ -515,7 +515,7 @@ mod tests {
     #[test]
     fn state_round_trip() {
         let dir = TempDir::new().expect("tmp");
-        let state_root = dir.path().join(".prsync");
+        let state_root = dir.path().join(".parsync");
         let state = StateStore::load(&state_root).expect("load");
         state
             .upsert_file(Path::new("a/b.txt"), 10, 123, 1024)
@@ -536,7 +536,7 @@ mod tests {
     #[test]
     fn destination_lock_is_exclusive() {
         let dir = TempDir::new().expect("tmp");
-        let state_root = dir.path().join(".prsync");
+        let state_root = dir.path().join(".parsync");
         let _lock = acquire_destination_lock(&state_root).expect("first lock");
         let second = acquire_destination_lock(&state_root);
         assert!(second.is_err());
@@ -546,7 +546,7 @@ mod tests {
     #[test]
     fn stale_destination_lock_is_recovered() {
         let dir = TempDir::new().expect("tmp");
-        let state_root = dir.path().join(".prsync");
+        let state_root = dir.path().join(".parsync");
         fs::create_dir_all(&state_root).expect("mkdir");
         let lock_path = state_root.join("lock");
         fs::write(&lock_path, "pid=999999\n").expect("write lock");
@@ -559,7 +559,7 @@ mod tests {
     #[test]
     fn prune_removes_orphan_state_and_partials() {
         let dir = TempDir::new().expect("tmp");
-        let state_root = dir.path().join(".prsync");
+        let state_root = dir.path().join(".parsync");
         let state = StateStore::load(&state_root).expect("load");
         state
             .upsert_file(Path::new("keep.txt"), 1, 1, 1)

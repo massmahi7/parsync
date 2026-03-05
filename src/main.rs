@@ -1,11 +1,11 @@
 use std::process::ExitCode;
 
 use clap::Parser;
-use prsync::cli::Cli;
+use parsync::cli::Cli;
 
 fn main() -> ExitCode {
     if std::env::args().any(|arg| arg == "--internal-remote-helper") {
-        return match prsync::remote_helper::run_stdio() {
+        return match parsync::remote_helper::run_stdio() {
             Ok(_) => ExitCode::SUCCESS,
             Err(err) => {
                 eprintln!("error: {err:#}");
@@ -16,7 +16,7 @@ fn main() -> ExitCode {
 
     let cli = Cli::parse();
     let debug = cli.debug;
-    match prsync::run_sync(cli) {
+    match parsync::run_sync(cli) {
         Ok(summary) => {
             if debug {
                 eprintln!(

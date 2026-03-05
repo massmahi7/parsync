@@ -53,28 +53,28 @@ impl ResolvedConfig {
 
         let jobs = cli
             .jobs
-            .or_else(|| env_parse::<usize>("PRSYNC_JOBS"))
+            .or_else(|| env_parse::<usize>("PARSYNC_JOBS"))
             .or(file_cfg.jobs)
             .unwrap_or_else(Cli::default_jobs)
             .max(1);
 
         let chunk_size = cli
             .chunk_size
-            .or_else(|| env_parse::<u64>("PRSYNC_CHUNK_SIZE"))
+            .or_else(|| env_parse::<u64>("PARSYNC_CHUNK_SIZE"))
             .or(file_cfg.chunk_size)
             .unwrap_or(8 * 1024 * 1024)
             .max(1);
 
         let chunk_threshold = cli
             .chunk_threshold
-            .or_else(|| env_parse::<u64>("PRSYNC_CHUNK_THRESHOLD"))
+            .or_else(|| env_parse::<u64>("PARSYNC_CHUNK_THRESHOLD"))
             .or(file_cfg.chunk_threshold)
             .unwrap_or(64 * 1024 * 1024)
             .max(1);
 
         let retries = cli
             .retries
-            .or_else(|| env_parse::<usize>("PRSYNC_RETRIES"))
+            .or_else(|| env_parse::<usize>("PARSYNC_RETRIES"))
             .or(file_cfg.retries)
             .unwrap_or(5)
             .max(1);
@@ -83,7 +83,7 @@ impl ResolvedConfig {
             true
         } else if cli.no_resume {
             false
-        } else if let Some(v) = env_parse::<bool>("PRSYNC_RESUME") {
+        } else if let Some(v) = env_parse::<bool>("PARSYNC_RESUME") {
             v
         } else {
             file_cfg.resume.unwrap_or(true)
@@ -92,74 +92,74 @@ impl ResolvedConfig {
         let state_dir = cli
             .state_dir
             .clone()
-            .or_else(|| std::env::var("PRSYNC_STATE_DIR").ok().map(PathBuf::from))
+            .or_else(|| std::env::var("PARSYNC_STATE_DIR").ok().map(PathBuf::from))
             .or(file_cfg.state_dir);
 
         let delta_enabled = if cli.delta {
             true
         } else {
-            env_parse::<bool>("PRSYNC_DELTA")
+            env_parse::<bool>("PARSYNC_DELTA")
                 .or(file_cfg.delta_enabled)
                 .unwrap_or(false)
         };
         let delta_min_size = cli
             .delta_min_size
-            .or_else(|| env_parse::<u64>("PRSYNC_DELTA_MIN_SIZE"))
+            .or_else(|| env_parse::<u64>("PARSYNC_DELTA_MIN_SIZE"))
             .or(file_cfg.delta_min_size)
             .unwrap_or(8 * 1024 * 1024)
             .max(1);
         let delta_block_size = cli
             .delta_block_size
-            .or_else(|| env_parse::<u32>("PRSYNC_DELTA_BLOCK_SIZE"))
+            .or_else(|| env_parse::<u32>("PARSYNC_DELTA_BLOCK_SIZE"))
             .or(file_cfg.delta_block_size);
         let delta_max_literals = cli
             .delta_max_literals
-            .or_else(|| env_parse::<u64>("PRSYNC_DELTA_MAX_LITERALS"))
+            .or_else(|| env_parse::<u64>("PARSYNC_DELTA_MAX_LITERALS"))
             .or(file_cfg.delta_max_literals)
             .unwrap_or(64 * 1024 * 1024);
         let delta_helper = cli
             .delta_helper
             .clone()
-            .or_else(|| std::env::var("PRSYNC_DELTA_HELPER").ok())
+            .or_else(|| std::env::var("PARSYNC_DELTA_HELPER").ok())
             .or(file_cfg.delta_helper)
-            .unwrap_or_else(|| "prsync --internal-remote-helper".to_string());
+            .unwrap_or_else(|| "parsync --internal-remote-helper".to_string());
         let delta_fallback = if cli.no_delta_fallback {
             false
         } else {
-            env_parse::<bool>("PRSYNC_DELTA_FALLBACK")
+            env_parse::<bool>("PARSYNC_DELTA_FALLBACK")
                 .or(file_cfg.delta_fallback)
                 .unwrap_or(true)
         };
         let strict_durability = if cli.strict_durability {
             true
         } else {
-            env_parse::<bool>("PRSYNC_STRICT_DURABILITY")
+            env_parse::<bool>("PARSYNC_STRICT_DURABILITY")
                 .or(file_cfg.strict_durability)
                 .unwrap_or(false)
         };
         let verify_existing = if cli.verify_existing {
             true
         } else {
-            env_parse::<bool>("PRSYNC_VERIFY_EXISTING")
+            env_parse::<bool>("PARSYNC_VERIFY_EXISTING")
                 .or(file_cfg.verify_existing)
                 .unwrap_or(false)
         };
         let sftp_read_concurrency = cli
             .sftp_read_concurrency
-            .or_else(|| env_parse::<usize>("PRSYNC_SFTP_READ_CONCURRENCY"))
+            .or_else(|| env_parse::<usize>("PARSYNC_SFTP_READ_CONCURRENCY"))
             .or(file_cfg.sftp_read_concurrency)
             .unwrap_or(4)
             .max(1);
         let sftp_read_chunk_size = cli
             .sftp_read_chunk_size
-            .or_else(|| env_parse::<u64>("PRSYNC_SFTP_READ_CHUNK_SIZE"))
+            .or_else(|| env_parse::<u64>("PARSYNC_SFTP_READ_CHUNK_SIZE"))
             .or(file_cfg.sftp_read_chunk_size)
             .unwrap_or(4 * 1024 * 1024)
             .max(1);
         let strict_windows_metadata = if cli.strict_windows_metadata {
             true
         } else {
-            env_parse::<bool>("PRSYNC_STRICT_WINDOWS_METADATA")
+            env_parse::<bool>("PARSYNC_STRICT_WINDOWS_METADATA")
                 .or(file_cfg.strict_windows_metadata)
                 .unwrap_or(false)
         };
@@ -207,7 +207,7 @@ fn load_file_config() -> Result<FileConfig> {
 
 fn default_config_path() -> Option<PathBuf> {
     let home = std::env::var("HOME").ok()?;
-    Some(PathBuf::from(home).join(".config/prsync/config.toml"))
+    Some(PathBuf::from(home).join(".config/parsync/config.toml"))
 }
 
 #[cfg(test)]
@@ -223,7 +223,7 @@ mod tests {
     #[test]
     fn cli_values_take_priority() {
         let cli = Cli::parse_from([
-            "prsync",
+            "parsync",
             "--jobs",
             "9",
             "--chunk-size",

@@ -2,7 +2,7 @@ use clap::{ArgAction, Parser};
 
 #[derive(Debug, Clone, Parser)]
 #[command(
-    name = "prsync",
+    name = "parsync",
     version,
     about = "Parallel rsync-like pull sync over SSH"
 )]
@@ -66,7 +66,7 @@ pub struct Cli {
     #[arg(long = "retries")]
     pub retries: Option<usize>,
 
-    /// Override state directory path (default: `<destination>/.prsync`)
+    /// Override state directory path (default: `<destination>/.parsync`)
     #[arg(long = "state-dir")]
     pub state_dir: Option<std::path::PathBuf>,
 
@@ -98,7 +98,7 @@ pub struct Cli {
     #[arg(long = "delta-max-literals")]
     pub delta_max_literals: Option<u64>,
 
-    /// Remote helper command (default: prsync --internal-remote-helper)
+    /// Remote helper command (default: parsync --internal-remote-helper)
     #[arg(long = "delta-helper")]
     pub delta_helper: Option<String>,
 
@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn parses_vrplu_flags() {
-        let cli = Cli::parse_from(["prsync", "-vrPlu", "user@h:/r", "/tmp/d"]);
+        let cli = Cli::parse_from(["parsync", "-vrPlu", "user@h:/r", "/tmp/d"]);
         assert!(cli.verbose);
         assert!(cli.recursive);
         assert!(cli.progress_partial);

@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [[ $# -lt 3 ]]; then
   echo "usage: $0 <remote_spec> <destination_dir> <runs> [jobs]" >&2
-  echo "example: $0 user@host:/src /tmp/prsync-bench 5 16" >&2
+  echo "example: $0 user@host:/src /tmp/parsync-bench 5 16" >&2
   exit 1
 fi
 
@@ -21,7 +21,7 @@ need_cmd() {
   }
 }
 
-need_cmd prsync
+need_cmd parsync
 need_cmd jq
 
 if ! command -v rclone >/dev/null 2>&1; then
@@ -49,8 +49,8 @@ run_one() {
   start_ns=$(date +%s%N)
 
   case "$tool" in
-    prsync)
-      prsync -vrPlu --jobs "$JOBS" "$REMOTE_SPEC" "$dst" >/dev/null 2>&1
+    parsync)
+      parsync -vrPlu --jobs "$JOBS" "$REMOTE_SPEC" "$dst" >/dev/null 2>&1
       ;;
     rclone)
       rclone copy --transfers "$JOBS" --sftp-concurrency "$JOBS" "$REMOTE_SPEC" "$dst" >/dev/null 2>&1
@@ -74,7 +74,7 @@ run_one() {
 }
 
 for i in $(seq 1 "$RUNS"); do
-  run_one prsync "$i"
+  run_one parsync "$i"
   if command -v rclone >/dev/null 2>&1; then
     run_one rclone "$i"
   fi

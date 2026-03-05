@@ -52,17 +52,17 @@ fn parse_mapped_port(port_output: &str) -> Result<u16> {
     Ok(port)
 }
 
-fn run_prsync(remote: &str, destination: &Path) -> Result<()> {
-    let output = Command::new(assert_cmd::cargo::cargo_bin!("prsync"))
+fn run_parsync(remote: &str, destination: &Path) -> Result<()> {
+    let output = Command::new(assert_cmd::cargo::cargo_bin!("parsync"))
         .args(["-vrPlu", remote, &destination.display().to_string()])
-        .env("PRSYNC_SSH_PASSWORD", "pass")
+        .env("PARSYNC_SSH_PASSWORD", "pass")
         .output()
-        .context("run prsync")?;
+        .context("run parsync")?;
     if output.status.success() {
         return Ok(());
     }
     Err(anyhow!(
-        "prsync failed: {}",
+        "parsync failed: {}",
         String::from_utf8_lossy(&output.stderr)
     ))
 }
@@ -98,7 +98,7 @@ fn e2e_pull_over_sftp_with_resume_state() -> Result<()> {
     let deadline = Instant::now() + Duration::from_secs(30);
     let mut last_err: Option<anyhow::Error> = None;
     while Instant::now() < deadline {
-        match run_prsync(&remote, destination.path()) {
+        match run_parsync(&remote, destination.path()) {
             Ok(()) => {
                 last_err = None;
                 break;
@@ -121,7 +121,7 @@ fn e2e_pull_over_sftp_with_resume_state() -> Result<()> {
         fs::read(destination.path().join("sub/nested.txt"))?,
         b"nested"
     );
-    assert!(!destination.path().join(".prsync").exists());
+    assert!(!destination.path().join(".parsync").exists());
 
     Ok(())
 }

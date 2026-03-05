@@ -9,7 +9,7 @@ use std::{
 use anyhow::{anyhow, Result};
 use tempfile::TempDir;
 
-use prsync::{
+use parsync::{
     remote::{EntryKind, RemoteClient, RemoteEntry, RemoteFileStat},
     sync::{run_sync_with_client, SyncOptions},
 };
@@ -117,7 +117,7 @@ fn opts(jobs: usize) -> SyncOptions {
         delta_min_size: 8 * 1024 * 1024,
         delta_block_size: None,
         delta_max_literals: 64 * 1024 * 1024,
-        delta_helper: "prsync --internal-remote-helper".to_string(),
+        delta_helper: "parsync --internal-remote-helper".to_string(),
         delta_fallback: true,
         strict_durability: false,
         verify_existing: false,
