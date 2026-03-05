@@ -110,7 +110,7 @@ struct TransferOutcome {
 
 pub fn run_sync(cli: Cli) -> Result<RunSummary> {
     let options = SyncOptions::from_cli(&cli)?;
-    vlog(
+    log_status(
         &options,
         format!(
             "starting sync source={} dest={} jobs={} chunk_size={} threshold={} resume={}",
@@ -123,15 +123,16 @@ pub fn run_sync(cli: Cli) -> Result<RunSummary> {
         ),
     );
     let spec = RemoteSpec::parse(&cli.remote_source)?;
-    vlog(
+    log_status(
         &options,
         format!(
             "parsed remote host={} port={} path={}",
             spec.host, spec.port, spec.path
         ),
     );
+    log_status(&options, "establishing ssh connection pool...");
     let remote = SshRemote::connect(spec, options.jobs)?;
-    vlog(&options, "ssh connection pool established");
+    log_status(&options, "ssh connection pool established");
     run_sync_with_client(&remote, &cli.local_destination, &options)
 }
 
@@ -794,6 +795,12 @@ fn list_entries_with_spinner<R: RemoteClient + Sync>(
 
 fn vlog(options: &SyncOptions, message: impl AsRef<str>) {
     if options.verbose && !options.progress {
+        eprintln!("[prsync] {}", message.as_ref());
+    }
+}
+
+fn log_status(options: &SyncOptions, message: impl AsRef<str>) {
+    if options.verbose || options.progress {
         eprintln!("[prsync] {}", message.as_ref());
     }
 }
