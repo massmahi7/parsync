@@ -1183,9 +1183,8 @@ impl TransferUi {
         let mibps = (total as f64 / (1024.0 * 1024.0)) / elapsed;
         if !self.bar.is_finished() {
             self.bar.finish_with_message(format!(
-                "files {files_done}/{} | {mibps:.2} MiB/s | {}",
-                self.total_files,
-                format_bytes_human(total)
+                "files {files_done}/{} | {mibps:.2} MiB/s",
+                self.total_files
             ));
         }
         if !self.file_line.is_finished() {
