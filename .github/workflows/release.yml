@@ -26,6 +26,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Restore Linux build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cargo-home/registry/index
+            .cargo-home/registry/cache
+            .cargo-home/git/db
+            target/${{ matrix.target }}
+          key: release-linux-${{ matrix.archive_platform }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            release-linux-${{ matrix.archive_platform }}-
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -33,9 +45,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .cargo-home
           docker run --rm --platform "${{ matrix.platform }}" \
             -v "$PWD:/work" \
             -w /work \
+            -e CARGO_HOME=/work/.cargo-home \
+            -e CARGO_TARGET_DIR=/work/target \
             ubuntu:20.04 \
             bash -lc '
               set -euo pipefail
@@ -92,6 +107,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+
+      - name: Restore macOS build cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: release-macos-${{ matrix.archive_platform }}
 
       - name: Install macOS build dependencies
         run: |
