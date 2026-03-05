@@ -171,12 +171,12 @@ pub fn run_sync(cli: Cli) -> Result<RunSummary> {
     );
     let summary = run_sync_with_client(&remote, &cli.local_destination, &options)?;
     let disconnect_started = Instant::now();
-    log_status(
+    log_debug(
         &options,
         "stage=disconnecting: closing ssh connection pool...",
     );
     drop(remote);
-    log_status(
+    log_debug(
         &options,
         format!(
             "stage=disconnecting: closed ssh connection pool in {}ms",
@@ -1074,7 +1074,7 @@ impl TransferUi {
             bar.set_style(style);
             bar.set_message(format!("files 0/{total_files} | 0.00 MiB/s"));
 
-            let file_style = ProgressStyle::with_template("{msg}")
+            let file_style = ProgressStyle::with_template("  {msg}")
                 .unwrap_or_else(|_| ProgressStyle::default_spinner());
             file_line.set_style(file_style);
             file_line.set_message("last: -");

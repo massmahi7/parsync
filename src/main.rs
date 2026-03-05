@@ -15,9 +15,10 @@ fn main() -> ExitCode {
     }
 
     let cli = Cli::parse();
+    let debug = cli.debug;
     match prsync::run_sync(cli) {
         Ok(summary) => {
-            if summary.verbose {
+            if debug {
                 eprintln!(
                     "completed: transferred={}, skipped={}, bytes={}, delta_files={}, delta_fallbacks={}, bytes_saved={}, listing_ms={}, planning_ms={}, read_ms={}, write_ms={}, finalize_ms={}, metadata_ms={}, state_commit_ms={}",
                     summary.transferred_files,
