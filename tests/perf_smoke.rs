@@ -96,6 +96,7 @@ fn build_dataset() -> (Vec<RemoteEntry>, BTreeMap<PathBuf, Vec<u8>>) {
 fn opts(jobs: usize) -> SyncOptions {
     SyncOptions {
         verbose: false,
+        debug: false,
         progress: false,
         recursive: true,
         links: true,

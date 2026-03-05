@@ -47,6 +47,7 @@ pub struct RunSummary {
 #[derive(Debug, Clone)]
 pub struct SyncOptions {
     pub verbose: bool,
+    pub debug: bool,
     pub progress: bool,
     pub recursive: bool,
     pub links: bool,
@@ -80,6 +81,7 @@ impl SyncOptions {
         let resolved = ResolvedConfig::from_cli(cli)?;
         Ok(Self {
             verbose: cli.verbose,
+            debug: cli.debug,
             progress: cli.progress(),
             recursive: cli.recursive,
             links: cli.links,
@@ -134,7 +136,7 @@ struct PerfCounters {
 
 pub fn run_sync(cli: Cli) -> Result<RunSummary> {
     let options = SyncOptions::from_cli(&cli)?;
-    log_status(
+    log_debug(
         &options,
         format!(
             "starting sync source={} dest={} jobs={} chunk_size={} threshold={} resume={} strict_durability={} verify_existing={} sftp_read_concurrency={} sftp_read_chunk_size={}",
@@ -151,7 +153,7 @@ pub fn run_sync(cli: Cli) -> Result<RunSummary> {
         ),
     );
     let spec = RemoteSpec::parse(&cli.remote_source)?;
-    log_status(
+    log_debug(
         &options,
         format!(
             "parsed remote host={} port={} path={}",
@@ -236,7 +238,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
     let mut dir_count = 0_u64;
     let mut symlink_count = 0_u64;
     let mut file_count = 0_u64;
-    log_status(options, "stage=planning: building transfer plan...");
+    log_debug(options, "stage=planning: building transfer plan...");
     let mut delta_eligible = 0_u64;
     let mut delta_planned = 0_u64;
     let mut skipped = 0_u64;
@@ -314,7 +316,7 @@ pub fn run_sync_with_client<R: RemoteClient + Sync>(
         delta_planned,
     };
     print_plan_summary(options, &plan_summary);
-    log_status(options, "stage=transferring: starting file workers...");
+    log_debug(options, "stage=transferring: starting file workers...");
     let ui = Arc::new(TransferUi::new(jobs.len() as u64, total_bytes, options));
 
     let transferred_files = AtomicU64::new(0);
@@ -985,6 +987,12 @@ fn log_status(options: &SyncOptions, message: impl AsRef<str>) {
     }
 }
 
+fn log_debug(options: &SyncOptions, message: impl AsRef<str>) {
+    if options.debug {
+        eprintln!("[prsync][debug] {}", message.as_ref());
+    }
+}
+
 struct PlanSummary {
     total_entries: u64,
     files: u64,
@@ -1010,8 +1018,8 @@ fn print_plan_summary(options: &SyncOptions, summary: &PlanSummary) {
         delta_eligible = summary.delta_eligible,
         delta_planned = summary.delta_planned,
     );
-    if options.progress || options.verbose {
-        eprintln!("[prsync] {summary}");
+    if options.debug {
+        eprintln!("[prsync][debug] {summary}");
     }
 }
 
@@ -1502,6 +1510,7 @@ mod tests {
     fn opts() -> SyncOptions {
         SyncOptions {
             verbose: false,
+            debug: false,
             progress: false,
             recursive: true,
             links: true,

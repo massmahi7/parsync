@@ -11,6 +11,9 @@ pub struct Cli {
     #[arg(short = 'v', long = "verbose", action = ArgAction::SetTrue)]
     pub verbose: bool,
 
+    #[arg(long = "debug", action = ArgAction::SetTrue)]
+    pub debug: bool,
+
     /// Recurse into directories
     #[arg(short = 'r', long = "recursive", action = ArgAction::SetTrue)]
     pub recursive: bool,
