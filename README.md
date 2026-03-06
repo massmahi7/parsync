@@ -7,7 +7,25 @@ parallel file transfers and optional block-delta sync.
 
 ## Installation
 
-Download the binary for your platform from the
+**Linux and macOS:**
+
+```bash
+curl -fsSL https://alpindale.net/install.sh | bash
+```
+
+**Windows:**
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://alpindale.net/install.ps1 | iex"
+```
+
+You can also install with cargo:
+
+```bash
+cargo install parsync
+```
+
+You may also download the binary for your platform from the
 [releases page](https://github.com/AlpinDale/parsync/releases), or install from source:
 
 ```bash
